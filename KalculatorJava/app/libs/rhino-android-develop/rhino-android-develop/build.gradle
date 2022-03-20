@@ -1,0 +1,32 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.1.2'
+    }
+}
+
+apply from: 'nexusConfig.gradle'
+
+ext.commonLicense = {
+    name 'The GNU General Public License (GPL)'
+    url 'https://www.gnu.org/licenses/gpl-2.0.txt'
+}
+
+ext.devs = [
+        {
+            id 'aveuiller'
+            name 'Antoine Veuiller'
+            email 'aveuiller@gmail.com'
+        }
+]
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    group = "io.apisense"
+    version = "1.2-SNAPSHOT"
+}
