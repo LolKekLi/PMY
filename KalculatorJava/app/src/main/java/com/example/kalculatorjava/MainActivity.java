@@ -36,9 +36,12 @@ public class MainActivity extends AppCompatActivity {
     private Button cos;
     private Button e;
     private Button result;
+    private Button point;
 
     private String expressionString = "";
     private String resultString = "";
+
+    private boolean canPoint =true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         delenie = findViewById(R.id.button_delenie);
         umnoshit = findViewById(R.id.button_umnoshit);
         result = findViewById(R.id.button_result);
+        point = findViewById(R.id.button_point);
 
         clear = findViewById(R.id.buttuns_clear);
         back = findViewById(R.id.back);
@@ -192,6 +196,41 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        point.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    RefreshExpression(".");
+                } catch (ScriptException scriptException) {
+                    scriptException.printStackTrace();
+                }
+            }
+        });
+
+        startSkobka.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+                try {
+                    RefreshExpression("(");
+                } catch (ScriptException scriptException) {
+                    scriptException.printStackTrace();
+                }
+            }
+        });
+
+        endSkobka.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+                try {
+                    RefreshExpression(")");
+                } catch (ScriptException scriptException) {
+                    scriptException.printStackTrace();
+                }
+            }
+        });
     }
 
     private void TrigFunc(String trigFunc) throws ScriptException {
@@ -237,6 +276,8 @@ public class MainActivity extends AppCompatActivity {
         resultString = "";
         expressionString ="";
 
+        canPoint = true;
+
         RefreshExpression("");
         RefreshResult();
     }
@@ -277,14 +318,75 @@ public class MainActivity extends AppCompatActivity {
     {
         if (funcValue.contains(sumbol))
         {
+            canPoint = true;
+
             if (expressionString.isEmpty())
             {
+                if(sumbol.equals("-"))
+                {
+                    expressionString += sumbol;
+                    expressionText.setText(expressionString);
+                }
+
                 return;
             }
 
             if (funcValue.contains(getLastSymbol(expressionString)))
             {
                 return;
+            }
+        }
+
+        if (sumbol.equals(")"))
+        {
+            if (expressionString.isEmpty())
+            {
+                return;
+            }
+
+            String lastSymbol = getLastSymbol(expressionString);
+
+            if (lastSymbol.equals("("))
+            {
+                return;
+            }
+
+            if (funcValue.contains(lastSymbol))
+            {
+                return;
+            }
+        }
+        else
+        {
+            if (sumbol==".")
+            {
+                if (!canPoint)
+                {
+                    return;
+                }
+
+                String lastSymbol = getLastSymbol(expressionString);
+
+                if (lastSymbol.equals(")") || lastSymbol.equals("("))
+                {
+                    return;
+                }
+
+                if(funcValue.contains(lastSymbol))
+                {
+                    sumbol = "0"+sumbol;
+                }
+
+                canPoint = false;
+            }
+
+            if (sumbol.equals("(")) {
+                String lastSymbol = getLastSymbol(expressionString);
+                if (!lastSymbol.equals("(")) {
+                    if (!funcValue.contains(lastSymbol)) {
+                        return;
+                    }
+                }
             }
         }
 
@@ -303,25 +405,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (expressionString != "")
         {
-            boolean isWisoutFuncSumbol = true;
-            for (int i = 0; i < funcValue.size(); i++) {
-                if (expressionString.contains(funcValue.get(i)))
-                {
-                    isWisoutFuncSumbol = false;
-                    break;
-                }
-            }
+            CheckFuncSunbol();
 
-            if (isWisoutFuncSumbol)
-            {
-                resultText.setText(expressionString);
-                return;
-            }
-
-            if (funcValue.contains(getLastSymbol(expressionString)))
-            {
-                RemoveLastSumbol();
-            }
+            FixScobci();
 
             ScriptEngineManager manager = new ScriptEngineManager();
             ScriptEngine engine = manager.getEngineByName("js");
@@ -331,6 +417,73 @@ public class MainActivity extends AppCompatActivity {
         }
 
         resultText.setText(resultStr);
+    }
+
+    private void CheckFuncSunbol() {
+        boolean isWisoutFuncSumbol = true;
+        for (int i = 0; i < funcValue.size(); i++) {
+            if (expressionString.contains(funcValue.get(i)))
+            {
+                isWisoutFuncSumbol = false;
+                break;
+            }
+        }
+
+        if (isWisoutFuncSumbol)
+        {
+            resultText.setText(expressionString);
+            return;
+        }
+
+        if (funcValue.contains(getLastSymbol(expressionString)))
+        {
+            RemoveLastSumbol();
+        }
+    }
+
+    private void FixScobci() {
+        int startScobkaCount =0;
+        int endScobkaCount =0;
+
+        if (!expressionString.contains(")") && !expressionString.contains("("))
+        {
+            return;
+        }
+
+        char[] charStrArray = expressionString.toCharArray();
+        for (int i = 0; i < charStrArray.length; i++) {
+            if (charStrArray[i]==')')
+            {
+                endScobkaCount++;
+            }
+            else if (charStrArray[i]=='(')
+            {
+                startScobkaCount++;
+            }
+        }
+
+        if (startScobkaCount == endScobkaCount)
+        {
+            return;
+        }
+
+        if(startScobkaCount > endScobkaCount)
+        {
+           int count = startScobkaCount - endScobkaCount;
+            for (int i = 0; i < count; i++) {
+                expressionString +=")";
+            }
+        }
+        else
+        {
+            int count = endScobkaCount - startScobkaCount;
+            String appendStr ="";
+            for (int i = 0; i < count; i++) {
+                appendStr +="(";
+            }
+            expressionString = appendStr+expressionString;
+        }
+
     }
 
     private String removeCharAt(String s, int pos)

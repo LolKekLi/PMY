@@ -21,13 +21,14 @@
     <TextView
         android:id="@+id/Result"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="66dp"
         android:layout_below="@+id/ExpressionText"
         android:layout_marginTop="5dp"
         android:fontFamily="monospace"
         android:textAlignment="textEnd"
         android:textColor="@color/white"
-        android:textSize="60sp" />
+        android:textSize="60sp"
+        tools:text="1234567890" />
 
     <LinearLayout
         android:id="@+id/buttons"
@@ -313,5 +314,38 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/button_MR"
+        android:layout_width="75dp"
+        android:layout_height="37dp"
+        android:layout_below="@+id/Result"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="33dp"
+        android:text="MR"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/button_MPlus"
+        android:layout_width="75dp"
+        android:layout_height="37dp"
+        android:layout_below="@+id/Result"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="33dp"
+        android:text="M+"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/button_MMinus"
+        android:layout_width="75dp"
+        android:layout_height="37dp"
+        android:layout_below="@+id/Result"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="220dp"
+        android:layout_marginTop="33dp"
+        android:text="M+"
+        android:textSize="15sp" />
 
 </RelativeLayout>
