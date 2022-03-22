@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView resultText;
     private TextView expressionText;
+    private TextView MText;
 
     private ArrayList<Button> value_buttons = new ArrayList<>();
 
@@ -38,11 +39,24 @@ public class MainActivity extends AppCompatActivity {
     private Button result;
     private Button point;
 
+    private Button MC;
+    private Button MR;
+    private Button MPlus;
+    private Button MMinus;
+
+    private String MVlaue = "";
     private String expressionString = "";
-    private String resultString = "";
 
     private boolean canPoint = true;
     private boolean isResultButtonClick = false;
+
+    enum MFuncType
+    {
+        MPlus,
+        MMinus,
+        MResult,
+        MClear,
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +69,10 @@ public class MainActivity extends AppCompatActivity {
     private void Prepare() {
         resultText = findViewById(R.id.Result);
         expressionText = findViewById(R.id.ExpressionText);
+        MText = findViewById(R.id.MText);
 
         PrepareValueButton();
-         PrepareFuncButton();
+        PrepareFuncButton();
     }
 
     private void PrepareFuncButton()
@@ -66,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         plus = findViewById(R.id.button_plus);
         delenie = findViewById(R.id.button_delenie);
         umnoshit = findViewById(R.id.button_umnoshit);
-        result = findViewById(R.id.button_result);
+        result = findViewById(R.id.button_MResult);
         point = findViewById(R.id.button_point);
 
         clear = findViewById(R.id.buttuns_clear);
@@ -77,6 +92,62 @@ public class MainActivity extends AppCompatActivity {
         sin = findViewById(R.id.button_sin);
         cos = findViewById(R.id.button_cos);
 
+        MC = findViewById(R.id.button_MClear);
+        MR = findViewById(R.id.button_MR);
+        MPlus = findViewById(R.id.button_MPlus);
+        MMinus = findViewById(R.id.button_MMinus);
+
+        //region MFunc
+        MC.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+                try {
+                    MFunc(MFuncType.MClear);
+                } catch (ScriptException scriptException) {
+                    scriptException.printStackTrace();
+                }
+            }
+        });
+
+        MR.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+                try {
+                    MFunc(MFuncType.MResult);
+                } catch (ScriptException scriptException) {
+                    scriptException.printStackTrace();
+                }
+            }
+        });
+
+        MPlus.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+                try {
+                    MFunc(MFuncType.MPlus);
+                } catch (ScriptException scriptException) {
+                    scriptException.printStackTrace();
+                }
+            }
+        });
+
+        MMinus.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+                try {
+                    MFunc(MFuncType.MMinus);
+                } catch (ScriptException scriptException) {
+                    scriptException.printStackTrace();
+                }
+            }
+        });
+//endregion
+
+        //region Func
         minus.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -125,13 +196,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //endregion
+
         result.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view) {
                 try {
-                    isResultButtonClick = true;
+                    if(isResultButtonClick)
+                    {
+                        CharSequence text = resultText.getText();
+                        expressionString = (String) text;
+                        expressionText.setText(resultText.getText());
+                        isResultButtonClick = false;
+                    }
                     RefreshResult();
+
                 } catch (ScriptException scriptException) {
                     scriptException.printStackTrace();
                 }
@@ -143,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
+                    isResultButtonClick = false;
                     Clear();
                 } catch (ScriptException scriptException) {
                     scriptException.printStackTrace();
@@ -154,11 +235,13 @@ public class MainActivity extends AppCompatActivity {
         {
             @Override
             public void onClick(View view) {
+                isResultButtonClick = false;
                 RemoveLastSumbol();
                 RefreshExpression();
             }
         });
 
+        //region TrigFunc
         sin.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -198,6 +281,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+        //endregion
 
         point.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,6 +317,51 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void MFunc(MFuncType type) throws ScriptException {
+
+        switch (type){
+            case MPlus:
+                MText.setText("M");
+                RefreshResult();
+                RefreshExpression();
+                String text = resultText.getText().toString();
+                MVlaue = "+" + text;
+                break;
+            case MMinus:
+                MText.setText("M");
+                RefreshResult();
+                RefreshExpression();
+                Double text1 = Double.valueOf(resultText.getText().toString());
+                MVlaue = "-" + text1;
+                break;
+            case MResult:
+                if (!MVlaue.isEmpty())
+                RefreshExpression(MVlaue);
+                break;
+            case MClear:
+                MText.setText("");
+                MVlaue = "";
+                break;
+        }
+    }
+
+    private void RefreshExpression(double mVlaue) {
+
+        if (!expressionString.isEmpty()) {
+            String lastSymbol = getLastSymbol(expressionString);
+            if (funcValue.contains(lastSymbol)) {
+                expressionString = removeCharAt(expressionString,expressionString.length()-1);
+            }
+            else if (lastSymbol.equals(")"))
+            {
+                return;
+            }
+        }
+
+        expressionString+=mVlaue;
+        expressionText.setText(expressionString);
     }
 
     private void TrigFunc(String trigFunc) throws ScriptException {
@@ -280,7 +409,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void Clear() throws ScriptException
     {
-        resultString = "";
         expressionString ="";
 
         canPoint = true;
@@ -323,8 +451,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void RefreshExpression(String sumbol) throws ScriptException
     {
-        isResultButtonClick = false;
-
         if (funcValue.contains(sumbol))
         {
             canPoint = true;
@@ -351,6 +477,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 expressionString = s;
                 expressionString += sumbol;
+                isResultButtonClick = false;
                 expressionText.setText(expressionString);
                 return;
             }
@@ -381,6 +508,7 @@ public class MainActivity extends AppCompatActivity {
             {
                 if (expressionString.isEmpty()) {
                     expressionString = "0" + sumbol;
+                    isResultButtonClick = false;
                     expressionText.setText(expressionString);
                     return;
                 }
@@ -417,6 +545,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        isResultButtonClick = false;
         expressionString += sumbol;
         expressionText.setText(expressionString);
     }
@@ -428,35 +557,47 @@ public class MainActivity extends AppCompatActivity {
 
     private void RefreshResult() throws ScriptException
     {
+        isResultButtonClick = true;
         String resultStr ="";
 
-        if (expressionString != "")
+        if (!expressionString.isEmpty())
         {
-            CheckFuncSunbol();
+            CheckFuncSumbol();
 
             FixScobci();
 
             ScriptEngineManager manager = new ScriptEngineManager();
             ScriptEngine engine = manager.getEngineByName("js");
 
-            Object result = engine.eval(expressionString);
-            resultStr = result.toString();
+            double result = (double) engine.eval(expressionString);
+
+            if (result % 1==0)
+            {
+                resultStr = String.valueOf((int)result);
+            }
+            else {
+                resultStr = String.valueOf(result);
+            }
         }
 
         resultText.setText(resultStr);
     }
 
-    private void CheckFuncSunbol() {
-        boolean isWisoutFuncSumbol = true;
-        for (int i = 0; i < funcValue.size(); i++) {
+    private void CheckFuncSumbol()
+    {
+        boolean isWithoutFuncSumbol = true;
+
+        for (int i = 0; i < funcValue.size(); i++)
+        {
             if (expressionString.contains(funcValue.get(i)))
             {
-                isWisoutFuncSumbol = false;
+                isWithoutFuncSumbol = false;
                 break;
             }
         }
 
-        if (isWisoutFuncSumbol)
+
+        if (isWithoutFuncSumbol)
         {
             resultText.setText(expressionString);
             return;
@@ -465,6 +606,7 @@ public class MainActivity extends AppCompatActivity {
         if (funcValue.contains(getLastSymbol(expressionString)))
         {
             RemoveLastSumbol();
+            RefreshExpression();
         }
     }
 

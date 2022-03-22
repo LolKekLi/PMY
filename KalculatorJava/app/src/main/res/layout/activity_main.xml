@@ -22,15 +22,15 @@
 
     <TextView
         android:id="@+id/Result"
-        android:layout_width="match_parent"
-        android:layout_height="89dp"
+        android:layout_width="381dp"
+        android:layout_height="93dp"
         android:layout_below="@+id/ExpressionText"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="1dp"
         android:autoSizeTextType="uniform"
         android:fontFamily="monospace"
         android:textAlignment="textEnd"
         android:textColor="@color/white"
-        tools:text="1234567890" />
+        tools:text="12345678900000000000000000000" />
 
     <LinearLayout
         android:id="@+id/buttons"
@@ -305,7 +305,7 @@
                 android:textSize="30dp" />
 
             <Button
-                android:id="@+id/button_result"
+                android:id="@+id/button_MResult"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -329,14 +329,14 @@
         android:textSize="15sp" />
 
     <Button
-        android:id="@+id/button_MPlus"
+        android:id="@+id/button_MClear"
         android:layout_width="75dp"
         android:layout_height="37dp"
         android:layout_below="@+id/Result"
         android:layout_alignParentStart="true"
         android:layout_marginStart="120dp"
         android:layout_marginTop="15dp"
-        android:text="M+"
+        android:text="MC"
         android:textSize="15sp" />
 
     <Button
@@ -347,11 +347,11 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="220dp"
         android:layout_marginTop="15dp"
-        android:text="M+"
+        android:text="M-"
         android:textSize="15sp" />
 
     <Button
-        android:id="@+id/button_MClear"
+        android:id="@+id/button_MPlus"
         android:layout_width="75dp"
         android:layout_height="37dp"
         android:layout_below="@+id/Result"
@@ -360,5 +360,17 @@
         android:layout_marginTop="15dp"
         android:text="M+"
         android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/MText"
+        android:layout_width="31dp"
+        android:layout_height="38dp"
+        android:layout_below="@+id/ExpressionText"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="-1dp"
+        android:layout_toEndOf="@+id/Result"
+        android:autoSizeTextType="uniform"
+        android:textColor="@color/white"
+        tools:text="M" />
 
 </RelativeLayout>
