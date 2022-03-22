@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private String expressionString = "";
     private String resultString = "";
 
-    private boolean canPoint =true;
+    private boolean canPoint = true;
+    private boolean isResultButtonClick = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
+                    isResultButtonClick = true;
                     RefreshResult();
                 } catch (ScriptException scriptException) {
                     scriptException.printStackTrace();
@@ -239,6 +241,11 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        if (funcValue.contains(getLastSymbol( getLastSymbol(expressionString))))
+        {
+            expressionString = removeCharAt(expressionString,expressionString.length()-1);
+        }
+
         ScriptEngineManager manager = new ScriptEngineManager();
         ScriptEngine engine = manager.getEngineByName("js");
         Object result = engine.eval(expressionString);
@@ -316,6 +323,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void RefreshExpression(String sumbol) throws ScriptException
     {
+        isResultButtonClick = false;
+
         if (funcValue.contains(sumbol))
         {
             canPoint = true;
@@ -331,8 +340,18 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            if (funcValue.contains(getLastSymbol(expressionString)))
+            String lastSymbol = getLastSymbol(expressionString);
+
+            if (funcValue.contains(lastSymbol))
             {
+                String s = removeCharAt(expressionString, expressionString.length() - 1);
+                if (s.isEmpty())
+                {
+                    return;
+                }
+                expressionString = s;
+                expressionString += sumbol;
+                expressionText.setText(expressionString);
                 return;
             }
         }
@@ -360,6 +379,12 @@ public class MainActivity extends AppCompatActivity {
         {
             if (sumbol==".")
             {
+                if (expressionString.isEmpty()) {
+                    expressionString = "0" + sumbol;
+                    expressionText.setText(expressionString);
+                    return;
+                }
+
                 if (!canPoint)
                 {
                     return;
@@ -374,17 +399,19 @@ public class MainActivity extends AppCompatActivity {
 
                 if(funcValue.contains(lastSymbol))
                 {
-                    sumbol = "0"+sumbol;
+                    sumbol = "0" + sumbol;
                 }
 
                 canPoint = false;
             }
 
             if (sumbol.equals("(")) {
-                String lastSymbol = getLastSymbol(expressionString);
-                if (!lastSymbol.equals("(")) {
-                    if (!funcValue.contains(lastSymbol)) {
-                        return;
+                if (!expressionString.isEmpty()) {
+                    String lastSymbol = getLastSymbol(expressionString);
+                    if (!lastSymbol.equals("(")) {
+                        if (!funcValue.contains(lastSymbol)) {
+                            return;
+                        }
                     }
                 }
             }
@@ -484,6 +511,7 @@ public class MainActivity extends AppCompatActivity {
             expressionString = appendStr+expressionString;
         }
 
+        RefreshExpression();
     }
 
     private String removeCharAt(String s, int pos)
