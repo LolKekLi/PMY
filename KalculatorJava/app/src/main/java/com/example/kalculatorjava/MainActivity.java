@@ -8,11 +8,14 @@ import javax.script.ScriptException;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -403,6 +406,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void RemoveLastSumbol() {
         if (!expressionString.isEmpty()) {
+            String lastSymbol = getLastSymbol(expressionString);
+            if (lastSymbol.equals("."))
+            {
+                canPoint = true;
+            }
             expressionString = removeCharAt(expressionString, expressionString.length() - 1);
         }
     }
@@ -562,6 +570,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (!expressionString.isEmpty())
         {
+            FixNull();
+
             CheckFuncSumbol();
 
             FixScobci();
@@ -576,11 +586,61 @@ public class MainActivity extends AppCompatActivity {
                 resultStr = String.valueOf((int)result);
             }
             else {
+                if (result < 0.00001)
+                {
+                    result = round(result,3);
+                }
+
                 resultStr = String.valueOf(result);
             }
         }
 
         resultText.setText(resultStr);
+    }
+
+    private double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
+    private void FixNull() {
+        boolean canNull = true;
+        boolean isDot = false;
+
+        String res = "";
+
+        if (expressionString.length() > 0) {
+            for (int i = 0; i < expressionString.length(); i++)
+            {
+                String symbol = getSymbol(expressionString, i);
+
+                if (symbol.equals("0"))
+                {
+                    if (canNull || isDot) {
+                        res += symbol;
+                    }
+
+                    canNull = false;
+                    continue;
+                }
+
+                if (funcValue.contains(symbol)) {
+                    canNull = true;
+                    isDot = false;
+                }
+                else if (symbol.equals(".")) {
+                    canNull = true;
+                    isDot = true;
+                }
+
+                res += symbol;
+            }
+        }
+        expressionString = res;
+        RefreshExpression();
     }
 
     private void CheckFuncSumbol()
@@ -640,7 +700,10 @@ public class MainActivity extends AppCompatActivity {
         {
            int count = startScobkaCount - endScobkaCount;
             for (int i = 0; i < count; i++) {
-                expressionString +=")";
+                if (getLastSymbol(expressionString).equals(".")) {
+                    expressionString = removeCharAt(expressionString, expressionString.length() - 1);
+                }
+                expressionString += ")";
             }
         }
         else
@@ -663,11 +726,6 @@ public class MainActivity extends AppCompatActivity {
 
     private String getSymbol(String str, int pos)
     {
-        if (pos >= str.length())
-        {
-            pos = str.length()-1;
-        }
-
         char[] charStrArray = str.toCharArray();
         String sumbol = String.valueOf(charStrArray[pos]);
 
