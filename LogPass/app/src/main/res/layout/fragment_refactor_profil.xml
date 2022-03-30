@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/fragment_refactorProfil"
+    android:tag="REF_PROFIL"
     tools:context=".RefactorProfilFrag">
 
     <ImageView
@@ -24,7 +25,7 @@
         tools:srcCompat="@drawable/app_avatar" />
 
     <EditText
-        android:id="@+id/sernameText"
+        android:id="@+id/RsernameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
@@ -36,7 +37,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/nameText"
+        android:id="@+id/RnameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -45,10 +46,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.728"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sernameText" />
+        app:layout_constraintTop_toBottomOf="@+id/RsernameText" />
 
     <EditText
-        android:id="@+id/middleNameText"
+        android:id="@+id/RmiddleNameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -57,10 +58,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.877"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nameText" />
+        app:layout_constraintTop_toBottomOf="@+id/RnameText" />
 
     <Button
-        android:id="@+id/refactorButton"
+        android:id="@+id/saveButton"
         android:layout_width="180dp"
         android:layout_height="94dp"
         android:text="Сохранить"
@@ -84,7 +85,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <EditText
-        android:id="@+id/univesritetText"
+        android:id="@+id/RunivesritetText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -95,7 +96,7 @@
         app:layout_constraintTop_toBottomOf="@+id/aducation" />
 
     <EditText
-        android:id="@+id/kursText"
+        android:id="@+id/RkursText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -103,10 +104,10 @@
         android:text="3 КУРС"
         android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/facultetText" />
+        app:layout_constraintTop_toBottomOf="@+id/RfacultetText" />
 
     <EditText
-        android:id="@+id/facultetText"
+        android:id="@+id/RfacultetText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -114,7 +115,18 @@
         android:text="ИСИТвИИ"
         android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/univesritetText" />
+        app:layout_constraintTop_toBottomOf="@+id/RunivesritetText" />
+
+    <EditText
+        android:id="@+id/Rdata"
+        android:layout_width="165dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="26dp"
+        android:text="28.01.2002"
+        android:textAlignment="textStart"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/RmiddleNameText" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

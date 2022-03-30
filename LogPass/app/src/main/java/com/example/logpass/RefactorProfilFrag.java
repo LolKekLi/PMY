@@ -3,62 +3,115 @@ package com.example.logpass;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
+import android.text.Editable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link RefactorProfilFrag#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 public class RefactorProfilFrag extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public RefactorProfilFrag() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RefactorProfilFrag.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static RefactorProfilFrag newInstance(String param1, String param2) {
-        RefactorProfilFrag fragment = new RefactorProfilFrag();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_refactor_profil, container, false);
+
+        View inflate = inflater.inflate(R.layout.fragment_refactor_profil, container, false);
+
+        Button viewById = inflate.findViewById(R.id.saveButton);
+        EditText fac = inflate.findViewById(R.id.RfacultetText);
+        EditText kur = inflate.findViewById(R.id.RkursText);
+        EditText univers = inflate.findViewById(R.id.RunivesritetText);
+        EditText middleNAme = inflate.findViewById(R.id.RmiddleNameText);
+        EditText sern = inflate.findViewById(R.id.RsernameText);
+        EditText name = inflate.findViewById(R.id.RnameText);
+        EditText data = inflate.findViewById(R.id.Rdata);
+
+        viewById.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (savedInstanceState == null)
+                {
+                    if (!CheckCorrectData(String.valueOf(data.getText())))
+                    {
+                        return;
+                    }
+
+                    List<Fragment> fragments = getParentFragmentManager().getFragments();
+
+                    FragmentActivity activity = fragments.get(1).getActivity();
+
+                    TextView dat = activity.findViewById(R.id.data);
+                    dat.setText(data.getText());
+
+                    TextView nameText = activity.findViewById(R.id.nameText);
+                    nameText.setText(name.getText());
+                    TextView sername = activity.findViewById(R.id.sernameText);
+                    sername.setText(sern.getText());
+                    TextView middleName = activity.findViewById(R.id.middleNameText);
+                    middleName.setText(middleNAme.getText());
+                    TextView facultet = activity.findViewById(R.id.facultetText);
+                    facultet.setText(fac.getText());
+                    TextView kurs = activity.findViewById(R.id.kursText);
+                    kurs.setText(kur.getText());
+                    TextView unvirset = activity.findViewById(R.id.univesritetText);
+                    unvirset.setText(univers.getText());
+
+
+
+
+                    getParentFragmentManager().beginTransaction().hide(fragments.get(2)).commit();
+                    getParentFragmentManager().beginTransaction().show(fragments.get(1)).commit();
+
+                }
+            }
+        });
+
+        return inflate;
+    }
+
+    private boolean CheckCorrectData(String text) {
+        char[] chars = text.toCharArray();
+
+        if (chars.length > 10 || chars[2] != '.' || chars[5] != '.')
+        {
+            Toast toast = Toast.makeText(getActivity(), "Неверный формат", Toast.LENGTH_LONG);
+            toast.show();
+
+            return false;
+        }
+
+        try {
+            Date date1 = new SimpleDateFormat("dd.MM.yyyy").parse(text);
+            Date date =  new Date();
+            if (date1.after(date))
+            {
+                Toast toast = Toast.makeText(getActivity(), "<Будущее>", Toast.LENGTH_LONG);
+                toast.show();
+
+                return false;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 }
